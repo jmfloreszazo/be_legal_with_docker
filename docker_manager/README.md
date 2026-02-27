@@ -5,13 +5,21 @@ Interactive CLI tool for common Docker operations. Uses [Rich](https://github.co
 ## Quick Start
 
 ```bash
-# Create a virtual environment and install dependencies
+# Easiest way — just run the script
+cd docker_manager
+bash run.sh
+```
+
+Or manually:
+
+```bash
+cd docker_manager
 python3 -m venv .venv
 source .venv/bin/activate      # Linux / macOS / WSL
 pip install -r requirements.txt
 
 # Run the tool
-python -m docker_manager
+PYTHONPATH=src python -m docker_manager
 ```
 
 ## Features
@@ -31,29 +39,35 @@ python -m docker_manager
 
 ## Project Structure
 
-```
+```text
 docker_manager/
-├── __init__.py
-├── __main__.py              # Entry point
-├── cli/
-│   ├── colors.py            # Rich console & theme
-│   ├── output.py            # Panels, tables, styled messages
-│   └── input.py             # pause, confirm, clear_screen
-├── core/
-│   └── docker.py            # run_docker, docker_json, check_docker
-├── commands/
-│   ├── dashboard.py         # Resource overview
-│   ├── containers.py        # Container operations
-│   ├── images.py            # Image operations
-│   ├── volumes.py           # Volume operations
-│   ├── networks.py          # Network operations
-│   ├── endpoints.py         # Exposed ports, URLs, container env viewer
-│   ├── livelogs.py          # Real-time log streaming (follow mode)
-│   ├── registry.py          # Registry grouping & removal
-│   ├── compose.py           # Compose project listing
-│   └── cleanup.py           # Selective & full prune
-└── menus/
-    └── menus.py              # Interactive menu navigation
+├── pyproject.toml             # Package metadata & dependencies
+├── requirements.txt           # Pip dependencies
+├── run.sh                     # One-command launcher
+├── README.md
+└── src/
+    └── docker_manager/
+        ├── __init__.py
+        ├── __main__.py          # Entry point
+        ├── cli/
+        │   ├── colors.py        # Rich console & theme
+        │   ├── output.py        # Panels, tables, styled messages
+        │   └── input.py         # pause, confirm, clear_screen
+        ├── core/
+        │   └── docker.py        # run_docker, docker_json, check_docker
+        ├── commands/
+        │   ├── dashboard.py     # Resource overview
+        │   ├── containers.py    # Container operations
+        │   ├── images.py        # Image operations
+        │   ├── volumes.py       # Volume operations
+        │   ├── networks.py      # Network operations
+        │   ├── endpoints.py     # Exposed ports, URLs, container env
+        │   ├── livelogs.py      # Real-time log streaming
+        │   ├── registry.py      # Registry grouping & removal
+        │   ├── compose.py       # Compose project listing
+        │   └── cleanup.py       # Selective & full prune
+        └── menus/
+            └── menus.py         # Interactive menu navigation
 ```
 
 ### Architecture
@@ -87,15 +101,17 @@ transparently.
 ## Usage Examples
 
 ```bash
-# Run from the parent directory (WSL / Linux)
-python -m docker_manager
+# From the docker_manager directory (WSL / Linux)
+PYTHONPATH=src python -m docker_manager
 
-# Or directly
-python docker_manager/__main__.py
+# Or use the launcher script
+bash run.sh
 ```
 
 ```powershell
-# Run from Windows PowerShell
+# From Windows PowerShell
+cd docker_manager
+$env:PYTHONPATH="src"
 python -m docker_manager
 ```
 

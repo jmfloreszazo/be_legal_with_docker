@@ -64,11 +64,16 @@ This repository focuses on **local container development**, not orchestration. I
 
 2. **Use Docker Manager** — Run the [Docker Manager CLI](docker_manager/README.md) to manage your containers:
    ```bash
-   cd /mnt/c/sources/personal/be_legal_with_docker
+   cd /mnt/c/sources/personal/be_legal_with_docker/docker_manager
+   bash run.sh
+   ```
+   Or manually:
+   ```bash
+   cd /mnt/c/sources/personal/be_legal_with_docker/docker_manager
    python3 -m venv .venv
    source .venv/bin/activate
    pip install -r requirements.txt
-   python -m docker_manager
+   PYTHONPATH=src python -m docker_manager
    ```
 
 ---
