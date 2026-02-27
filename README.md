@@ -11,7 +11,7 @@ In large corporations, container tooling choices matter. Licensing, support cont
 | Folder | Description |
 |--------|-------------|
 | [wsl_setup/](wsl_setup/README.md) | WSL2 configuration guide + automated setup script (Node.js, Java, .NET, ZSH, Docker CE) |
-| [docker_manager/](docker_manager/README.md) | Interactive Python CLI for managing Docker resources (containers, images, volumes, networks, compose, cleanup) |
+| [docker_manager/](docker_manager/README.md) | Interactive Python CLI for managing Docker resources (containers, images, volumes, networks, endpoints, live logs, compose, cleanup). Works from WSL2 and Windows PowerShell. |
 
 ---
 
@@ -64,6 +64,10 @@ This repository focuses on **local container development**, not orchestration. I
 
 2. **Use Docker Manager** — Run the [Docker Manager CLI](docker_manager/README.md) to manage your containers:
    ```bash
+   cd /mnt/c/sources/personal/be_legal_with_docker
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
    python -m docker_manager
    ```
 

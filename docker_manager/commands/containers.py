@@ -2,7 +2,7 @@
 
 import json
 
-from docker_manager.cli.colors import Colors
+from docker_manager.cli.colors import console
 from docker_manager.cli.input import confirm, pause
 from docker_manager.cli.output import (
     print_header,
@@ -62,7 +62,7 @@ def inspect_container() -> None:
         containers.append(parts)
         print(f"  {len(containers)}) {parts[1]} ({parts[0][:12]}) - {parts[2]} [{parts[3]}]")
 
-    choice = input(f"\n{Colors.CYAN}Select container number (0 to cancel): {Colors.NC}").strip()
+    choice = console.input("\n[cyan]Select container number (0 to cancel): [/cyan]").strip()
     if not choice.isdigit() or int(choice) == 0 or int(choice) > len(containers):
         return
 
@@ -73,45 +73,45 @@ def inspect_container() -> None:
 
     # Ports
     ports = run_docker(f"port {container_id}")
-    print(f"{Colors.BOLD}Ports:{Colors.NC}")
+    console.print("[bold]Ports:[/bold]")
     if ports.stdout.strip():
         for line in ports.stdout.strip().split("\n"):
-            print(f"  {line}")
+            console.print(f"  {line}")
     else:
-        print(f"  {Colors.DIM}No ports exposed{Colors.NC}")
+        console.print("  [dim]No ports exposed[/dim]")
 
     # Mounts
     mounts = docker_json(f"inspect --format '{{{{json .Mounts}}}}' {container_id}")
-    print(f"\n{Colors.BOLD}Mounts:{Colors.NC}")
+    console.print("\n[bold]Mounts:[/bold]")
     if mounts:
         for m in mounts:
             src = m.get("Source", "N/A")
             dst = m.get("Destination", "N/A")
             mtype = m.get("Type", "N/A")
-            print(f"  [{mtype}] {src} → {dst}")
+            console.print(f"  \\[{mtype}] {src} → {dst}")
     else:
-        print(f"  {Colors.DIM}No mounts{Colors.NC}")
+        console.print("  [dim]No mounts[/dim]")
 
     # Environment variables
     env_result = run_docker(f"inspect --format '{{{{json .Config.Env}}}}' {container_id}")
-    print(f"\n{Colors.BOLD}Environment Variables:{Colors.NC}")
+    console.print("\n[bold]Environment Variables:[/bold]")
     if env_result.stdout.strip():
         try:
             env_vars = json.loads(env_result.stdout.strip())
             for var in env_vars:
-                print(f"  {var}")
+                console.print(f"  {var}")
         except json.JSONDecodeError:
-            print(f"  {Colors.DIM}Unable to parse{Colors.NC}")
+            console.print("  [dim]Unable to parse[/dim]")
 
     # Networks
     net_result = run_docker(
         f"inspect --format '{{{{range $k, $v := .NetworkSettings.Networks}}}}"
         f"{{{{$k}}}}: {{{{$v.IPAddress}}}}{{{{\"\\n\"}}}}{{{{end}}}}' {container_id}"
     )
-    print(f"\n{Colors.BOLD}Networks:{Colors.NC}")
+    console.print("\n[bold]Networks:[/bold]")
     if net_result.stdout.strip():
         for line in net_result.stdout.strip().split("\n"):
-            print(f"  {line}")
+            console.print(f"  {line}")
 
     pause()
 
@@ -131,12 +131,12 @@ def container_logs() -> None:
         containers.append(parts)
         print(f"  {len(containers)}) {parts[1]} [{parts[2]}]")
 
-    choice = input(f"\n{Colors.CYAN}Select container (0 to cancel): {Colors.NC}").strip()
+    choice = console.input("\n[cyan]Select container (0 to cancel): [/cyan]").strip()
     if not choice.isdigit() or int(choice) == 0 or int(choice) > len(containers):
         return
 
     container_id = containers[int(choice) - 1][0]
-    lines = input(f"{Colors.CYAN}Number of lines (default 50): {Colors.NC}").strip()
+    lines = console.input("[cyan]Number of lines (default 50): [/cyan]").strip()
     lines = lines if lines.isdigit() else "50"
 
     print()

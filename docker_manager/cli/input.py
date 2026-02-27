@@ -2,7 +2,9 @@
 
 import os
 
-from docker_manager.cli.colors import Colors
+from rich.prompt import Confirm
+
+from docker_manager.cli.colors import console
 
 
 def clear_screen() -> None:
@@ -12,11 +14,10 @@ def clear_screen() -> None:
 
 def pause() -> None:
     """Wait for the user to press Enter."""
-    print()
-    input(f"{Colors.DIM}Press Enter to continue...{Colors.NC}")
+    console.print()
+    console.input("[muted]Press Enter to continue...[/muted]")
 
 
 def confirm(msg: str) -> bool:
     """Ask for yes/no confirmation. Returns True only on 'y'/'yes'."""
-    answer = input(f"{Colors.YELLOW}{msg} (y/N): {Colors.NC}").strip().lower()
-    return answer in ("y", "yes")
+    return Confirm.ask(f"[warning]{msg}[/warning]", default=False)

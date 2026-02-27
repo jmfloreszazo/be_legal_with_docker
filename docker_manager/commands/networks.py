@@ -2,7 +2,7 @@
 
 import json
 
-from docker_manager.cli.colors import Colors
+from docker_manager.cli.colors import console
 from docker_manager.cli.input import confirm, pause
 from docker_manager.cli.output import (
     print_header,
@@ -44,7 +44,7 @@ def inspect_network() -> None:
         networks.append(parts)
         print(f"  {len(networks)}) {parts[1]} ({parts[2]})")
 
-    choice = input(f"\n{Colors.CYAN}Select network (0 to cancel): {Colors.NC}").strip()
+    choice = console.input("\n[cyan]Select network (0 to cancel): [/cyan]").strip()
     if not choice.isdigit() or int(choice) == 0 or int(choice) > len(networks):
         return
 
@@ -58,7 +58,7 @@ def inspect_network() -> None:
     try:
         data = json.loads(detail.stdout)
     except json.JSONDecodeError:
-        print(detail.stdout)
+        console.print(detail.stdout)
         pause()
         return
 
@@ -67,21 +67,21 @@ def inspect_network() -> None:
         return
 
     net = data[0]
-    print(f"  {Colors.BOLD}Driver:{Colors.NC}  {net.get('Driver', 'N/A')}")
-    print(f"  {Colors.BOLD}Scope:{Colors.NC}   {net.get('Scope', 'N/A')}")
+    console.print(f"  [bold]Driver:[/bold]  {net.get('Driver', 'N/A')}")
+    console.print(f"  [bold]Scope:[/bold]   {net.get('Scope', 'N/A')}")
 
     ipam = net.get("IPAM", {}).get("Config", [])
     if ipam:
-        print(f"  {Colors.BOLD}Subnet:{Colors.NC}  {ipam[0].get('Subnet', 'N/A')}")
-        print(f"  {Colors.BOLD}Gateway:{Colors.NC} {ipam[0].get('Gateway', 'N/A')}")
+        console.print(f"  [bold]Subnet:[/bold]  {ipam[0].get('Subnet', 'N/A')}")
+        console.print(f"  [bold]Gateway:[/bold] {ipam[0].get('Gateway', 'N/A')}")
 
     containers = net.get("Containers", {})
-    print(f"\n  {Colors.BOLD}Connected Containers ({len(containers)}):{Colors.NC}")
+    console.print(f"\n  [bold]Connected Containers ({len(containers)}):[/bold]")
     if containers:
         for cid, cinfo in containers.items():
-            print(f"    • {cinfo.get('Name', cid[:12])} - {cinfo.get('IPv4Address', 'N/A')}")
+            console.print(f"    • {cinfo.get('Name', cid[:12])} - {cinfo.get('IPv4Address', 'N/A')}")
     else:
-        print(f"    {Colors.DIM}No containers connected{Colors.NC}")
+        console.print("    [dim]No containers connected[/dim]")
 
     pause()
 

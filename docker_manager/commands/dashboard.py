@@ -1,6 +1,8 @@
 """Dashboard: quick overview of all Docker resources."""
 
-from docker_manager.cli.colors import Colors
+from rich.table import Table
+
+from docker_manager.cli.colors import console
 from docker_manager.cli.input import pause
 from docker_manager.cli.output import print_header
 from docker_manager.core.docker import run_docker
@@ -20,19 +22,23 @@ def show_dashboard() -> None:
         "system df --format '{{.Type}}\t{{.TotalCount}}\t{{.Size}}\t{{.Reclaimable}}'"
     )
 
-    print(f"  {Colors.GREEN}Running containers:{Colors.NC}  {len(containers_running)}")
-    print(f"  {Colors.CYAN}Total containers:{Colors.NC}    {len(containers_all)}")
-    print(f"  {Colors.BLUE}Images:{Colors.NC}              {len(images)}")
-    print(f"  {Colors.MAGENTA}Volumes:{Colors.NC}             {len(volumes)}")
-    print(f"  {Colors.YELLOW}Networks:{Colors.NC}            {len(networks)}")
+    console.print(f"  [green]Running containers:[/green]  {len(containers_running)}")
+    console.print(f"  [cyan]Total containers:[/cyan]    {len(containers_all)}")
+    console.print(f"  [blue]Images:[/blue]              {len(images)}")
+    console.print(f"  [magenta]Volumes:[/magenta]             {len(volumes)}")
+    console.print(f"  [yellow]Networks:[/yellow]            {len(networks)}")
 
     if disk.returncode == 0 and disk.stdout.strip():
-        print(f"\n  {Colors.BOLD}Disk Usage:{Colors.NC}")
-        print(f"  {'Type':<16} {'Count':<10} {'Size':<12} {'Reclaimable':<12}")
-        print(f"  {'─' * 16} {'─' * 10} {'─' * 12} {'─' * 12}")
+        tbl = Table(show_edge=False, pad_edge=True)
+        tbl.add_column("Type", style="bold", min_width=16)
+        tbl.add_column("Count", min_width=10)
+        tbl.add_column("Size", min_width=12)
+        tbl.add_column("Reclaimable", min_width=12)
         for line in disk.stdout.strip().split("\n"):
             parts = line.split("\t")
             if len(parts) >= 4:
-                print(f"  {parts[0]:<16} {parts[1]:<10} {parts[2]:<12} {parts[3]:<12}")
+                tbl.add_row(parts[0], parts[1], parts[2], parts[3])
+        console.print()
+        console.print(tbl)
 
     pause()

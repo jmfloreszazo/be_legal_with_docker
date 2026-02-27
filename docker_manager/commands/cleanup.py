@@ -1,6 +1,6 @@
 """Cleanup operations: selective and full Docker system prune."""
 
-from docker_manager.cli.colors import Colors
+from docker_manager.cli.colors import console
 from docker_manager.cli.input import confirm, pause
 from docker_manager.cli.output import print_header, print_info, print_success, print_warning
 from docker_manager.core.docker import run_docker
@@ -53,8 +53,8 @@ def selective_cleanup() -> None:
     for i, (desc, _) in enumerate(_CLEANUP_OPTIONS, 1):
         print(f"  {i}) {desc}")
 
-    print(f"\n  {Colors.DIM}Enter numbers separated by commas (e.g., 1,2,4){Colors.NC}")
-    choices = input(f"{Colors.CYAN}Select options (0 to cancel): {Colors.NC}").strip()
+    console.print("\n  [dim]Enter numbers separated by commas (e.g., 1,2,4)[/dim]")
+    choices = console.input("[cyan]Select options (0 to cancel): [/cyan]").strip()
 
     if choices == "0":
         return

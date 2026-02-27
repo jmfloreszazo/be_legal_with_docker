@@ -1,6 +1,6 @@
 """Registry operations: list/remove images grouped by registry source."""
 
-from docker_manager.cli.colors import Colors
+from docker_manager.cli.colors import console
 from docker_manager.cli.input import confirm, pause
 from docker_manager.cli.output import print_header, print_success, print_warning
 from docker_manager.core.docker import run_docker
@@ -30,12 +30,12 @@ def list_registry_images() -> None:
         registries.setdefault(registry, []).append(parts)
 
     for registry, images in registries.items():
-        print(f"\n  {Colors.BOLD}{Colors.MAGENTA}{registry}{Colors.NC}")
-        print(f"  {'─' * 50}")
+        console.print(f"\n  [bold magenta]{registry}[/bold magenta]")
+        console.rule(style="dim", characters="─")
         for img in images:
             tag = img[1] if len(img) > 1 else "latest"
             size = img[3] if len(img) > 3 else "?"
-            print(f"    {img[0]}:{tag}  ({size})")
+            console.print(f"    {img[0]}:{tag}  ({size})")
 
     pause()
 
@@ -60,7 +60,7 @@ def remove_registry_images() -> None:
     for i, reg in enumerate(registry_list, 1):
         print(f"  {i}) {reg} ({len(registries[reg])} image(s))")
 
-    choice = input(f"\n{Colors.CYAN}Select registry (0 to cancel): {Colors.NC}").strip()
+    choice = console.input("\n[cyan]Select registry (0 to cancel): [/cyan]").strip()
     if not choice.isdigit() or int(choice) == 0 or int(choice) > len(registry_list):
         return
 

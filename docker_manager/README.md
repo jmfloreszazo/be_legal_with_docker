@@ -1,10 +1,16 @@
 # Docker Manager
 
-Interactive CLI tool for common Docker operations. No dependencies required — pure Python 3.
+Interactive CLI tool for common Docker operations. Uses [Rich](https://github.com/Textualize/rich) for beautiful terminal output.
 
 ## Quick Start
 
 ```bash
+# Create a virtual environment and install dependencies
+python3 -m venv .venv
+source .venv/bin/activate      # Linux / macOS / WSL
+pip install -r requirements.txt
+
+# Run the tool
 python -m docker_manager
 ```
 
@@ -13,10 +19,12 @@ python -m docker_manager
 | Menu | Operations |
 |------|-----------|
 | **Dashboard** | Quick overview: running/total containers, images, volumes, networks, disk usage |
-| **Containers** | List running/all, inspect (ports, env, mounts, IPs), view logs, stop all, remove stopped |
+| **Containers** | List running/all, inspect (ports, env, mounts, IPs), view logs, live tail, endpoints, env viewer, stop all, remove stopped |
 | **Images** | List all, list dangling, remove dangling, remove ALL |
 | **Volumes** | List all, remove unused, remove ALL |
 | **Networks** | List all, inspect (connected containers, subnet, gateway), remove unused |
+| **Endpoints** | Show exposed ports and accessible URLs for all running containers |
+| **Live Logs** | Real-time log streaming with `docker logs --follow` (Ctrl+C to stop) |
 | **Registry** | List images grouped by registry source, remove images by registry |
 | **Compose** | List running Docker Compose v2 projects |
 | **Cleanup** | Selective cleanup (pick resources) or full `docker system prune` |
@@ -28,8 +36,8 @@ docker_manager/
 ├── __init__.py
 ├── __main__.py              # Entry point
 ├── cli/
-│   ├── colors.py            # ANSI color constants
-│   ├── output.py            # print_header, print_table, print_success, ...
+│   ├── colors.py            # Rich console & theme
+│   ├── output.py            # Panels, tables, styled messages
 │   └── input.py             # pause, confirm, clear_screen
 ├── core/
 │   └── docker.py            # run_docker, docker_json, check_docker
@@ -39,6 +47,8 @@ docker_manager/
 │   ├── images.py            # Image operations
 │   ├── volumes.py           # Volume operations
 │   ├── networks.py          # Network operations
+│   ├── endpoints.py         # Exposed ports, URLs, container env viewer
+│   ├── livelogs.py          # Real-time log streaming (follow mode)
 │   ├── registry.py          # Registry grouping & removal
 │   ├── compose.py           # Compose project listing
 │   └── cleanup.py           # Selective & full prune
@@ -58,16 +68,35 @@ docker_manager/
 ## Requirements
 
 - Python 3.10+
-- Docker CLI installed and daemon running
+- Docker CLI installed and daemon running (WSL2 or native Linux)
+- `rich>=13.0` (installed via `pip install -r requirements.txt`)
+
+## Cross-Platform Support
+
+Docker Manager works from both **WSL2** and **Windows PowerShell**:
+
+| Environment | How it works |
+|-------------|-------------|
+| WSL2 / Linux | Calls `docker` directly |
+| Windows PowerShell | Routes commands via `wsl docker` automatically |
+
+When running from PowerShell, Docker Manager detects the Windows environment and
+prefixes all Docker commands with `wsl` so the Docker daemon inside WSL2 is used
+transparently.
 
 ## Usage Examples
 
 ```bash
-# Run from the parent directory
+# Run from the parent directory (WSL / Linux)
 python -m docker_manager
 
 # Or directly
 python docker_manager/__main__.py
+```
+
+```powershell
+# Run from Windows PowerShell
+python -m docker_manager
 ```
 
 ## Destructive Operations

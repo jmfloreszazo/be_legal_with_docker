@@ -1,53 +1,47 @@
-"""Formatted output helpers for the terminal."""
+"""Formatted output helpers using Rich."""
 
-from docker_manager.cli.colors import Colors
+from rich.panel import Panel
+from rich.table import Table
+
+from docker_manager.cli.colors import console
 
 
 def print_header(title: str) -> None:
-    """Print a styled section header."""
-    width = 64
-    print(f"\n{Colors.BLUE}{'═' * width}{Colors.NC}")
-    print(f"{Colors.BLUE}  {title}{Colors.NC}")
-    print(f"{Colors.BLUE}{'═' * width}{Colors.NC}\n")
+    """Print a styled section header inside a panel."""
+    console.print()
+    console.print(Panel(f"[header]{title}[/header]", border_style="cyan", width=62))
+    console.print()
 
 
 def print_success(msg: str) -> None:
-    print(f"{Colors.GREEN}✓ {msg}{Colors.NC}")
+    console.print(f"[success]✓ {msg}[/success]")
 
 
 def print_warning(msg: str) -> None:
-    print(f"{Colors.YELLOW}⚠ {msg}{Colors.NC}")
+    console.print(f"[warning]⚠ {msg}[/warning]")
 
 
 def print_error(msg: str) -> None:
-    print(f"{Colors.RED}✗ {msg}{Colors.NC}")
+    console.print(f"[error]✗ {msg}[/error]")
 
 
 def print_info(msg: str) -> None:
-    print(f"{Colors.CYAN}→ {msg}{Colors.NC}")
+    console.print(f"[info]→ {msg}[/info]")
 
 
 def print_table(headers: list[str], rows: list[list[str]]) -> None:
-    """Print a simple ASCII table with auto-sized columns."""
+    """Print a rich formatted table."""
     if not rows:
         print_warning("No data to display.")
         return
 
-    col_widths = [len(h) for h in headers]
-    for row in rows:
-        for i, cell in enumerate(row):
-            if i < len(col_widths):
-                col_widths[i] = max(col_widths[i], len(str(cell)))
+    table = Table(show_header=True, header_style="bold cyan", border_style="dim",
+                  show_lines=False, pad_edge=True, expand=False)
 
-    header_line = "  ".join(
-        f"{Colors.BOLD}{h:<{col_widths[i]}}{Colors.NC}" for i, h in enumerate(headers)
-    )
-    print(header_line)
-    print("  ".join("─" * w for w in col_widths))
+    for h in headers:
+        table.add_column(h)
 
     for row in rows:
-        cells = []
-        for i, cell in enumerate(row):
-            w = col_widths[i] if i < len(col_widths) else 20
-            cells.append(f"{str(cell):<{w}}")
-        print("  ".join(cells))
+        table.add_row(*[str(c) for c in row])
+
+    console.print(table)
